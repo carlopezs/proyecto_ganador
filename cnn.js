@@ -16,7 +16,6 @@ const pgPromise = require('pg-promise')
 }
 
 const pgp = pgPromise({})
-pgp.pg.defaults.ssl = true;
+pgp.pg.defaults.ssl = false;
 const db = pgp(config)
-db.any();
 exports.db = db 
