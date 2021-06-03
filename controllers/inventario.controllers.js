@@ -8,7 +8,7 @@ const getProducts = async (req, res) => {
 }
 
 const getProductsById = async (req, res) => {
-    const pro__id = req.params.name;
+    const pro__id = req.params.pro__id;
     const response = await db.any(
       `SELECT * FROM public.product WHERE pro_id=$1;`,
       [pro__id]
