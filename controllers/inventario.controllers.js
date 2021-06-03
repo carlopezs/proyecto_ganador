@@ -8,13 +8,20 @@ const getProducts = async (req, res) => {
 }
 
 const getProductsById = async (req, res) => {
-    const pro__id = req.params.pro__id;
-    const response = await db.any(
-      `SELECT * FROM public.product WHERE pro_id=$1;`,
-      [pro__id]
-    );
-    res.json(response);
-  };
+    const pro_id = req.params.query;
+    const sql=`SELECT * FROM public.product WHERE pro_id=$1;`;
+    try{
+      const response = await db.any(sql,[pro_id])
+      res.json({
+        message: "Producto encontrado con exito",
+        response
+      })
+    } catch (error) {
+      res.json({
+        error,
+      });
+    };
+  }
   
   const postCreateProduct = async (req, res) => {
     const { pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock } = req.query;
@@ -25,7 +32,7 @@ const getProductsById = async (req, res) => {
       res.json({
         message: "Producto creado con exito",
         body: {
-          pizza: { pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock },
+          producto: { pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock },
         },
       });
     } catch (error) {
@@ -46,7 +53,7 @@ const getProductsById = async (req, res) => {
       res.json({
         message: "Producto actualizado con exito!!",
         body: {
-          pizza: { pro_id, pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock  },
+          producto: { pro_id, pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock  },
         },
       });
     } catch (error) {
@@ -66,7 +73,7 @@ const getProductsById = async (req, res) => {
       res.json({
         message: "Producto eliminado con exito!!",
         body: {
-          pizza: { pro_id},
+          producto: { pro_id},
         },
       });
     } catch (error) {
@@ -83,3 +90,4 @@ module.exports = {
     putUpdateProduct,
     deleteDeleteProducto
 }
+

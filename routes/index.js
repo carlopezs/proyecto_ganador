@@ -6,7 +6,7 @@ route.get('/',(req,res) => {
     res.send('Welcome API-REST Inventario!!!!')})
 
 route.get('/productos',getProducts)
-route.get('/productos/:id', getProductsById)
+route.get('/productos/:pro_id', getProductsById)
 route.post('/productos', postCreateProduct)
 route.put('/productos', putUpdateProduct)
 route.delete('/productos', deleteDeleteProducto)
