@@ -8,20 +8,14 @@ const getProducts = async (req, res) => {
 }
 
 const getProductsById = async (req, res) => {
-    const pro_id = req.params.query;
-    const sql=`SELECT * FROM public.product WHERE pro_id=$1;`;
-    try{
-      const response = await db.any(sql,[pro_id])
-      res.json({
-        message: "Producto encontrado con exito",
-        response
-      })
-    } catch (error) {
-      res.json({
-        error,
-      });
-    };
-  }
+  const pro_id = req.params.pro_id;
+  const response = await db.any(
+    `select p.pro_id, p.pro_nombre, p.pro_descripcion,p.pro_iva, p.pro_costo,p.pro_pvp, p.pro_activo, p.pro_stock
+    from product p WHERE pro_id=$1;`,
+    [pro_id]
+  );
+  res.json(response);
+};
   
   const postCreateProduct = async (req, res) => {
     const { pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo, pro_stock } = req.query;

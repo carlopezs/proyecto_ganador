@@ -1,5 +1,6 @@
 const {Router} = require('express')
 const { getProducts, getProductsById, postCreateProduct, putUpdateProduct, deleteDeleteProducto} = require('../controllers/inventario.controllers')
+const { getAjustes, getAjustesByProd, postCreateAjusteCabecera, postCreateAjusteDetalle } = require('../controllers/ajustes.controllers')
 const route = Router()
 
 route.get('/',(req,res) => {
@@ -10,6 +11,12 @@ route.get('/productos/:pro_id', getProductsById)
 route.post('/productos', postCreateProduct)
 route.put('/productos', putUpdateProduct)
 route.delete('/productos', deleteDeleteProducto)
+
+route.get('/ajustes', getAjustes)
+route.get('/ajustes/:pro_id', getAjustesByProd)
+route.post('/ajustes/cab', postCreateAjusteCabecera)
+route.post('/ajustes/det', postCreateAjusteDetalle)
+
 
 
 module.exports = route
