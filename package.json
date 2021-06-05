@@ -1,0 +1,30 @@
+{
+  "name": "api-inventario",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "John Gordón",
+  "license": "ISC",
+  "devDependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "file-system": "^2.2.2",
+    "pg-promise": "^10.10.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "file-system": "^2.2.2",
+    "nodemon": "^2.0.7",
+    "pg": "^8.6.0",
+    "pg-promise": "^10.10.2"
+  },
+  "engines": {
+    "node": "10.16.2"
+  }
+}
