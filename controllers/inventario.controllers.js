@@ -62,6 +62,28 @@ const getProductsById = async (req, res) => {
       });
     }
   };
+
+
+  const putUpdateProductSinStock = async (req, res) => {
+    const {pro_id, pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo} = req.query;
+  
+    const sql = `UPDATE public.product SET pro_nombre=$2, pro_descripcion=$3, pro_iva=$4, pro_costo=$5, 
+    pro_pvp=$6, pro_activo=$7
+	WHERE pro_id=$1;`;
+    try {
+      const response = await db.any(sql, [pro_id, pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo]);
+      res.json({
+        message: "Producto actualizado con exito!!",
+        body: {
+          producto: { pro_id, pro_nombre, pro_descripcion, pro_iva, pro_costo, pro_pvp, pro_activo},
+        },
+      });
+    } catch (error) {
+      res.json({
+        error,
+      });
+    }
+  };
   
   const deleteDeleteProducto = async (req, res) => {
     const {pro_id} = req.query;
@@ -88,6 +110,7 @@ module.exports = {
     getProductsById,
     postCreateProduct,
     putUpdateProduct,
+    putUpdateProductSinStock,
     deleteDeleteProducto,
     getProductsWithStock
 }
