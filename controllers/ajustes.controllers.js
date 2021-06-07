@@ -2,21 +2,29 @@ const { db } = require('../cnn')
 
 
 const getAjustes = async (req, res) => {
-    const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_suma
+    const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, c.cab_imp,d.det_cantidad, d.det_stock_registro
     from ajustes_cabecera c inner join ajustes_detalle d on c.cab_id=d.cab_id
-    group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_suma 
+    group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro 
     order by c.cab_id;`)
     res.json(response)
 }
 
+const getAjustesWithOutImp = async (req, res) => {
+  const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, c.cab_imp
+  from ajustes_cabecera c  
+  where  c.cab_imp=false or c.cab_imp=null
+  order by c.cab_id;`)
+  res.json(response)
+}
+
 const getAjustesByProd = async (req, res) => {
     const pro_id = req.params.pro_id
-    const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_suma, d.pro_id
+    const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id
     from ajustes_cabecera c 
     inner join ajustes_detalle d on c.cab_id=d.cab_id
     inner join product p on d.pro_id=p.pro_id
     where p.pro_id=1
-    group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_suma, d.pro_id;`, [pro_id])
+    group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id;`, [pro_id])
     res.json(response)
 }
 
@@ -48,8 +56,8 @@ const postCreateAjusteCabecera = async (req, res) => {
     
     const { cab_descripcion} = req.query;
     const sql = `INSERT INTO public.ajustes_cabecera(
-        cab_num, cab_descripcion, cab_fecha)
-        VALUES ($1, $2, current_timestamp);`;
+        cab_num, cab_descripcion, cab_fecha, cab_imp)
+        VALUES ($1, $2, current_timestamp, false);`;
     const resp =getNumeroID();
     const valores=(await resp).match().input;
     console.log(valores);
@@ -92,6 +100,7 @@ const postCreateAjusteDetalle = async (req, res) => {
 
 module.exports = {
     getAjustes,
+    getAjustesWithOutImp,
     getAjustesByProd,
     postCreateAjusteDetalle,
     postCreateAjusteCabecera
