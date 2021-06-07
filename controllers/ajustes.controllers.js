@@ -51,6 +51,29 @@ const getNumeroID = async (req, res) => {
     return this.numeroIDCompleto
 }
 
+const getNumeroID2 = async (req, res) => {
+  const response = await db.any(`select max(cab_id) from ajustes_cabecera;`)
+  const num = String(response[0].max+1)
+  //console.log(num)
+  const num2=parseInt(String(num.length),10)
+  //console.log(num2)
+  const numeroIDCompleto ="";
+  if(num2<5){
+      this.numeroIDCompleto = "AJUS-"+String(num);
+  };
+  if(num2<4){
+      this.numeroIDCompleto = "AJUS-0"+String(num);
+  };
+  if(num2<3){
+      this.numeroIDCompleto = "AJUS-00"+String(num);
+  };
+  if(num2<2){
+      this.numeroIDCompleto = "AJUS-000"+String(num);
+  };
+  //console.log(this.numeroIDCompleto)
+  res.json(this.numeroIDCompleto)
+}
+
 
 const postCreateAjusteCabecera = async (req, res) => {
     
@@ -103,6 +126,7 @@ module.exports = {
     getAjustesWithOutImp,
     getAjustesByProd,
     postCreateAjusteDetalle,
-    postCreateAjusteCabecera
+    postCreateAjusteCabecera,
+    getNumeroID2
 }
 
