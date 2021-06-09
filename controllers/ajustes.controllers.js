@@ -102,16 +102,16 @@ const postCreateAjusteCabecera = async (req, res) => {
 
 
 const postCreateAjusteDetalle = async (req, res) => {
-    const { det_cantidad, cab_id, pro_id} = req.query;
+    const { det_cantidad, cab_id, pro_id,det_stock_registro} = req.query;
     const sql = `INSERT INTO public.ajustes_detalle(
       det_cantidad, cab_id, pro_id, det_stock_registro)
-      VALUES ($1, $2, $3, (select pro_stock from product where pro_id = $4));`;
+      VALUES ($1, $2, $3, $4);`;
     try {
-      const response = await db.any(sql, [det_cantidad, cab_id, pro_id, pro_id]);
+      const response = await db.any(sql, [det_cantidad, cab_id, pro_id, det_stock_registro]);
       res.json({
         message: "Detalle creado con exito",
         body: {
-          detalle: { det_cantidad, cab_id, pro_id },
+          detalle: { det_cantidad, cab_id, pro_id,det_stock_registro },
         },
       });
     } catch (error) {
