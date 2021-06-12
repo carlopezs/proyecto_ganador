@@ -1,6 +1,5 @@
 const { db } = require('../cnn')
 
-
 const getProducts = async (req, res) => {
     const response = await db.any(`select p.pro_id, p.pro_nombre, p.pro_descripcion,p.pro_iva, p.pro_costo,p.pro_pvp, p.pro_activo, p.pro_stock 
     from product p order by p.pro_id;`)
@@ -106,6 +105,35 @@ const getProductsById = async (req, res) => {
     }
   };
 
+
+  const getStockById = async (pro_id,req, res) => {
+    const response = await db.any(`select p.pro_stock from product p where p.pro_id=$1;`,[pro_id])
+    const num = response
+    return num
+  }
+
+  const putUpdateMoreStock = async (req, res) => {
+    let {pro_id, pro_stock } = req.query;
+    const num = await getStockById(pro_id)
+    const num2=num[0].pro_stock + parseInt(pro_stock)
+    const sql = `UPDATE public.product  set pro_stock=$2 WHERE pro_id=$1;`;
+
+    try {
+      const response = await db.any(sql, [pro_id, num2 ]);
+      res.json({
+        message: "Producto actualizado con exito!!",
+        body: {
+          producto: { pro_id, pro_stock  },
+        },
+      });
+    } catch (error) {
+      res.json({
+        error,
+      });
+    }
+  };
+
+
 module.exports = {
     getProducts,
     getProductsById,
@@ -113,6 +141,7 @@ module.exports = {
     putUpdateProduct,
     putUpdateProductSinStock,
     deleteDeleteProducto,
-    getProductsWithStock
+    getProductsWithStock,
+    putUpdateMoreStock
 }
 

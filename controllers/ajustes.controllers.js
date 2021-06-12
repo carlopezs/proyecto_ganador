@@ -19,12 +19,12 @@ const getAjustesWithOutImp = async (req, res) => {
 
 const getAjustesByProd = async (req, res) => {
     const pro_id = req.params.pro_id
-    const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id
+    const response = await db.any(`SELECT c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id ,p.pro_nombre
     from ajustes_cabecera c 
     inner join ajustes_detalle d on c.cab_id=d.cab_id
     inner join product p on d.pro_id=p.pro_id
-    where p.pro_id=1
-    group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id;`, [pro_id])
+    where p.pro_id=$1
+    group by  c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id ,p.pro_nombre;`, [pro_id])
     res.json(response)
 }
 
