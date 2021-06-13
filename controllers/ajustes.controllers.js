@@ -28,6 +28,13 @@ const getAjustesByProd = async (req, res) => {
     res.json(response)
 }
 
+const getDetallesByCab = async (req, res) => {
+  const cab_id = req.params.cab_id
+  const response = await db.any(`select det_id,det_cantidad, cab_id, pro_id, det_stock_registro
+  from ajustes_detalle where cab_id=$1;`, [cab_id])
+  res.json(response)
+}
+
 const getNumeroID = async (req, res) => {
     const response = await db.any(`select max(cab_id) from ajustes_cabecera;`)
     const num = String(response[0].max+1)
@@ -121,12 +128,78 @@ const postCreateAjusteDetalle = async (req, res) => {
     }
 };
 
+
+const putUpdateCabecera = async (req, res) => {
+  const {cab_id, cab_descripcion } = req.query;
+  const sql = `UPDATE public.ajustes_cabecera
+                SET  cab_descripcion=$2
+                WHERE cab_id=$1;`;
+  try {
+    const response = await db.any(sql, [cab_id, cab_descripcion ]);
+    res.json({
+      message: "Cabecera actualizada con exito!!",
+      body: {
+        cabecera: { cab_id, cab_descripcion   },
+      },
+    });
+  } catch (error) {
+    res.json({
+      error,
+    });
+  }
+};
+
+const putUpdateDetalle = async (req, res) => {
+  const {det_id, det_cantidad, det_stock_registro } = req.query;
+  const sql = `UPDATE public.ajustes_detalle
+                SET  det_cantidad=$2, det_stock_registro=$3
+                WHERE det_id=$1;`;
+  try {
+    const response = await db.any(sql, [det_id, det_cantidad, det_stock_registro ]);
+    res.json({
+      message: "Detalle actualizado con exito!!",
+      body: {
+        detalle: { det_id, det_cantidad, det_stock_registro },
+      },
+    });
+  } catch (error) {
+    res.json({
+      error,
+    });
+  }
+};
+
+
+const deleteDetalle = async (req, res) => {
+  const {det_id} = req.query;
+
+  const sql = `DELETE FROM public.ajustes_detalle
+	              WHERE det_id=$1;`;
+  try {
+    const response = await db.any(sql, [det_id]);
+    res.json({
+      message: "Detalle eliminado con exito!!",
+      body: {
+        detalle: { det_id},
+      },
+    });
+  } catch (error) {
+    res.json({
+      error,
+    });
+  }
+};
+
 module.exports = {
     getAjustes,
     getAjustesWithOutImp,
     getAjustesByProd,
     postCreateAjusteDetalle,
     postCreateAjusteCabecera,
-    getNumeroID2
+    getNumeroID2,
+    getDetallesByCab,
+    putUpdateCabecera,
+    putUpdateDetalle,
+    deleteDetalle
 }
 

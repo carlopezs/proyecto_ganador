@@ -1,6 +1,6 @@
 const {Router} = require('express')
 const { getProducts, getProductsById, postCreateProduct, putUpdateProduct, putUpdateProductSinStock, deleteDeleteProducto, getProductsWithStock, putUpdateMoreStock } = require('../controllers/inventario.controllers')
-const { getAjustes, getAjustesByProd, postCreateAjusteCabecera, postCreateAjusteDetalle, getAjustesWithOutImp, getNumeroID2 } = require('../controllers/ajustes.controllers')
+const { getAjustes, getAjustesByProd, postCreateAjusteCabecera, postCreateAjusteDetalle, getAjustesWithOutImp, getNumeroID2, getDetallesByCab, putUpdateCabecera, putUpdateDetalle, deleteDetalle } = require('../controllers/ajustes.controllers')
 const route = Router()
 
 route.get('/',(req,res) => {
@@ -19,8 +19,13 @@ route.get('/ajustes', getAjustes)
 route.get('/ajustes/woimp', getAjustesWithOutImp)
 route.get('/ajustes/id', getNumeroID2)
 route.get('/ajustes/:pro_id', getAjustesByProd)
+route.get('/ajustes/det/:cab_id', getDetallesByCab)
 route.post('/ajustes/cab', postCreateAjusteCabecera)
 route.post('/ajustes/det', postCreateAjusteDetalle)
+route.put('/ajustes/cab', putUpdateCabecera)
+route.put('/ajustes/det', putUpdateDetalle)
+route.delete('/ajustes/det', deleteDetalle)
+
 
 
 
