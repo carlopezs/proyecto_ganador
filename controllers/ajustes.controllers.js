@@ -28,6 +28,12 @@ const getAjustesByProd = async (req, res) => {
     res.json(response)
 }
 
+const getCabeceraById = async (req, res) => {
+  const cab_id = req.params.cab_id
+  const response = await db.any(`select * from ajustes_cabecera where cab_id=$1;`, [cab_id])
+  res.json(response)
+}
+
 const getDetallesByCab = async (req, res) => {
   const cab_id = req.params.cab_id
   const response = await db.any(`select det_id,det_cantidad, cab_id, pro_id, det_stock_registro
@@ -192,6 +198,7 @@ const deleteDetalle = async (req, res) => {
 
 module.exports = {
     getAjustes,
+    getCabeceraById,
     getAjustesWithOutImp,
     getAjustesByProd,
     postCreateAjusteDetalle,
