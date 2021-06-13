@@ -155,6 +155,24 @@ const putUpdateCabecera = async (req, res) => {
   }
 };
 
+const putUpdateCabeceraImp = async (req, res) => {
+  const {cab_id } = req.query;
+  const sql = `UPDATE public.ajustes_cabecera SET  cab_imp=true WHERE cab_id=$1;`;
+  try {
+    const response = await db.any(sql, [cab_id]);
+    res.json({
+      message: "Cabecera actualizada con exito!!",
+      body: {
+        cabecera: { cab_id  },
+      },
+    });
+  } catch (error) {
+    res.json({
+      error,
+    });
+  }
+};
+
 const putUpdateDetalle = async (req, res) => {
   const {det_id, det_cantidad, det_stock_registro } = req.query;
   const sql = `UPDATE public.ajustes_detalle
@@ -206,6 +224,7 @@ module.exports = {
     getNumeroID2,
     getDetallesByCab,
     putUpdateCabecera,
+    putUpdateCabeceraImp,
     putUpdateDetalle,
     deleteDetalle
 }
