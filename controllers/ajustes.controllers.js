@@ -36,8 +36,11 @@ const getCabeceraById = async (req, res) => {
 
 const getDetallesByCab = async (req, res) => {
   const cab_id = req.params.cab_id
-  const response = await db.any(`select det_id,det_cantidad, cab_id, pro_id, det_stock_registro
-  from ajustes_detalle where cab_id=$1;`, [cab_id])
+  const response = await db.any(`select d.det_id, d.det_cantidad, d.cab_id, d.pro_id, p.pro_nombre, d.det_stock_registro
+  from ajustes_detalle d 
+  inner join product p on p.pro_id=d.pro_id
+  where cab_id=$1
+  group by d.det_id, p.pro_id;`, [cab_id])
   res.json(response)
 }
 
