@@ -1,4 +1,5 @@
 const { db } = require('../cnn')
+const fetch = require("node-fetch");
 
 
 const getAjustes = async (req, res) => {
@@ -7,6 +8,7 @@ const getAjustes = async (req, res) => {
     group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro 
     order by c.cab_id;`)
     res.json(response)
+    await getKardexByProduct()
 }
 
 const getAjustesWithOutImp = async (req, res) => {
@@ -28,6 +30,85 @@ const getAjustesByProd = async (req, res) => {
     res.json(response)
 }
 
+const getKardexByProduct = async () =>{
+  const pro = 1
+  let kardexCompras = [];
+  let kardexVentas = [];
+  let kardexAjustes = [];
+  const ajustes = await getAjustesByProd2(pro)
+  ajustes.map(({cab_num, cab_descripcion, cab_fecha, det_cantidad, det_stock_registro})=>{
+    kardexAjustes.push({
+      cab_id_ajustes:cab_num, 
+      cab_descripcion, 
+      cab_fecha_factura:cab_fecha, 
+      det_pro_cantidad:det_cantidad, 
+      det_stock_registro
+    })
+  })
+
+
+  /* console.log()
+  console.log("Ajustes***************************")
+  console.log(ajustes) */
+  const compras = await getComprasByProduct(pro)
+  compras.map(({cab_id, cab_fecha_factura, inv_productos})=>{
+    const detComp = inv_productos.filter(({det_pro_codigo})=>det_pro_codigo==pro)
+    detComp.map(({det_pro_cantidad})=>{
+      kardexCompras.push({
+        cab_id_compras:cab_id,
+        cab_fecha_factura,
+        det_pro_cantidad
+      })
+    })
+    
+  })
+  /* console.log(kardexCompras)
+  console.log("Compras***************************")
+  console.log(compras) */
+
+  const ventas = await getVentasByProduct(pro)
+  ventas.billPayments.map(({bh_id, bh_date,bills_details})=>{
+    const detVent = bills_details.filter(({bd_product_id})=>bd_product_id==pro)
+    detVent.map(({bd_amount})=>{
+      kardexVentas.push({
+        cab_id_ventas:bh_id,
+        cab_fecha_factura:bh_date,
+        det_pro_cantidad:(bd_amount*-1)
+      })
+    })
+    
+  })
+  const kardex = [...kardexAjustes,...kardexCompras,...kardexVentas]
+  console.log(kardex)
+  //console.log(kardexVentas)
+  /* console.log("Ventas***************************")
+  console.log(ventas) */
+}
+
+const getAjustesByProd2 = async (pro_id) => {
+  const response = await db.any(`SELECT c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id ,p.pro_nombre
+  from ajustes_cabecera c 
+  inner join ajustes_detalle d on c.cab_id=d.cab_id
+  inner join product p on d.pro_id=p.pro_id
+  where p.pro_id=$1
+  group by  c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro, d.pro_id ,p.pro_nombre;`, [pro_id])
+  return response;
+}
+
+const getVentasByProduct = async (pro_id) => {
+  const url = `https://api-facturacion.herokuapp.com/facturacion/bills/byProductId?bd_product_id=${pro_id}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+};
+
+const getComprasByProduct = async (pro_id) => {
+  const url = `https://app-mod-com.herokuapp.com/compras/facturaByProduct/${pro_id}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+};
+
 const getCabeceraById = async (req, res) => {
   const cab_id = req.params.cab_id
   const response = await db.any(`select * from ajustes_cabecera where cab_id=$1;`, [cab_id])
@@ -43,6 +124,8 @@ const getDetallesByCab = async (req, res) => {
   group by d.det_id, p.pro_id;`, [cab_id])
   res.json(response)
 }
+
+
 
 const getNumeroID = async (req, res) => {
     const response = await db.any(`select max(cab_id) from ajustes_cabecera;`)
