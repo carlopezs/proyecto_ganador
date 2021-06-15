@@ -30,8 +30,7 @@ const getAjustesByProd = async (req, res) => {
     res.json(response)
 }
 
-const getKardexByProduct = async () =>{
-  const pro = 1
+const getKardexByProduct = async (pro) =>{
   let kardexCompras = [];
   let kardexVentas = [];
   let kardexAjustes = [];
@@ -312,6 +311,7 @@ module.exports = {
     putUpdateCabecera,
     putUpdateCabeceraImp,
     putUpdateDetalle,
-    deleteDetalle
+    deleteDetalle,
+    getKardexByProduct
 }
 

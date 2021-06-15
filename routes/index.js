@@ -1,12 +1,13 @@
 const {Router} = require('express')
 const { getProducts, getProductsById, postCreateProduct, putUpdateProduct, putUpdateProductSinStock, deleteDeleteProducto, getProductsWithStock, putUpdateMoreStock } = require('../controllers/inventario.controllers')
-const { getAjustes, getAjustesByProd, postCreateAjusteCabecera, postCreateAjusteDetalle, getAjustesWithOutImp, getNumeroID2, getDetallesByCab, putUpdateCabecera, putUpdateDetalle, deleteDetalle, getCabeceraById, putUpdateCabeceraImp } = require('../controllers/ajustes.controllers')
+const { getAjustes, getAjustesByProd, postCreateAjusteCabecera, postCreateAjusteDetalle, getAjustesWithOutImp, getNumeroID2, getDetallesByCab, putUpdateCabecera, putUpdateDetalle, deleteDetalle, getCabeceraById, putUpdateCabeceraImp, getKardexByProduct } = require('../controllers/ajustes.controllers')
 const route = Router()
 
 route.get('/',(req,res) => {
     res.send('Welcome API-REST Inventario!!!!')})
 
 route.get('/productos',getProducts)
+route.get('/kardex',getKardexByProduct)
 route.put('/stock', putUpdateMoreStock)
 route.get('/productos/stock',getProductsWithStock)
 route.get('/productos/:pro_id', getProductsById)
