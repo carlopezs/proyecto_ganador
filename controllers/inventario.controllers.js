@@ -22,11 +22,6 @@ const getProductsById = async (req, res) => {
     from product p WHERE pro_id=$1;`,
     [pro_id]
   );
-  /*const a1 =await getVentasByProduct(pro_id) 
-  const a2 =await getComprasByProduct(pro_id) 
-  const a3 =await getDetallesByProduct(pro_id) 
-  const a4 =await getCantProducts()
-  console.log("Respuesta: "+(a1+a2+a3))*/
   res.json(response);
 };
   
