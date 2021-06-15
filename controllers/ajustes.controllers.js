@@ -30,7 +30,8 @@ const getAjustesByProd = async (req, res) => {
     res.json(response)
 }
 
-const getKardexByProduct = async (pro) =>{
+const getKardexByProduct = async (req,res) =>{
+  const pro = req.params.pro_id;
   let kardexCompras = [];
   let kardexVentas = [];
   let kardexAjustes = [];
@@ -82,6 +83,7 @@ const getKardexByProduct = async (pro) =>{
   //console.log(kardexVentas)
   /* console.log("Ventas***************************")
   console.log(ventas) */
+  res.json(kardex)
 }
 
 const getAjustesByProd2 = async (pro_id) => {

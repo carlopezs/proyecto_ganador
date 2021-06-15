@@ -7,7 +7,7 @@ route.get('/',(req,res) => {
     res.send('Welcome API-REST Inventario!!!!')})
 
 route.get('/productos',getProducts)
-route.get('/kardex',getKardexByProduct)
+route.get('/kardex/:pro_id',getKardexByProduct)
 route.put('/stock', putUpdateMoreStock)
 route.get('/productos/stock',getProductsWithStock)
 route.get('/productos/:pro_id', getProductsById)
