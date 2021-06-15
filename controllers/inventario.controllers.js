@@ -1,6 +1,9 @@
 const { db } = require('../cnn')
+const fetch = require("node-fetch");
+const { put } = require('../routes');
 
 const getProducts = async (req, res) => {
+    const a1 = await putUpdateMoreStock()
     const response = await db.any(`select p.pro_id, p.pro_nombre, p.pro_descripcion,p.pro_iva, p.pro_costo,p.pro_pvp, p.pro_activo, p.pro_stock 
     from product p order by p.pro_id;`)
     res.json(response)
@@ -19,6 +22,11 @@ const getProductsById = async (req, res) => {
     from product p WHERE pro_id=$1;`,
     [pro_id]
   );
+  /*const a1 =await getVentasByProduct(pro_id) 
+  const a2 =await getComprasByProduct(pro_id) 
+  const a3 =await getDetallesByProduct(pro_id) 
+  const a4 =await getCantProducts()
+  console.log("Respuesta: "+(a1+a2+a3))*/
   res.json(response);
 };
   
@@ -111,27 +119,86 @@ const getProductsById = async (req, res) => {
     return num
   }
 
-  const putUpdateMoreStock = async (req, res) => {
-    let {pro_id, pro_stock } = req.query;
-    const num = await getStockById(pro_id)
-    const num2=num[0].pro_stock + parseInt(pro_stock)
+  const putUpdateMoreStock = async () => {
+
+    /*const ventas =await getVentasByProduct(pro_id) 
+    const compras =await getComprasByProduct(pro_id) 
+    const detalles =await getDetallesByProduct(pro_id) */
+    const cantidad =await getCantProducts()
+
     const sql = `UPDATE public.product  set pro_stock=$2 WHERE pro_id=$1;`;
 
     try {
-      const response = await db.any(sql, [pro_id, num2 ]);
-      res.json({
-        message: "Producto actualizado con exito!!",
-        body: {
-          producto: { pro_id, pro_stock  },
-        },
-      });
+
+      for(var i = 1; i <=cantidad; i++ ){
+        const ventas =await getVentasByProduct(i)
+        const compras =await getComprasByProduct(i) 
+        const detalles =await getDetallesByProduct(i) 
+        console.log("Respuesta: "+(ventas+compras+detalles)+" Del producto: "+i)
+        const response = await db.any(sql, [i, (ventas+compras+detalles) ]);
+      }
+
     } catch (error) {
-      res.json({
-        error,
-      });
+      console.log(error)
     }
   };
+
+
   
+  const getVentasByProduct = async (pro_id) => {
+    const url = `https://api-facturacion.herokuapp.com/facturacion/bills/byProductId?bd_product_id=${pro_id}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(typeof data)
+    //console.log(data.billPayments)
+    let sum = 0
+    data.billPayments.map(({bills_details})=>{
+      bills_details.map(({bd_amount})=>{
+        //console.log(bd_amount)
+        sum = sum + bd_amount
+      })
+    })
+    sum = sum * -1
+    console.log("Venta: "+sum)
+    return sum;
+  };
+
+  const getComprasByProduct = async (pro_id) => {
+    const url = `https://app-mod-com.herokuapp.com/compras/facturaByProduct/${pro_id}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(typeof data)
+    //console.log(data)
+    let sum = 0
+    data.map(({inv_productos})=>{
+      inv_productos.map(({det_pro_cantidad})=>{
+        //console.log(det_pro_cantidad)
+        sum = sum + det_pro_cantidad
+      })
+    })
+    console.log("Compra: "+sum)
+    return sum;
+  };
+
+  const getDetallesByProduct = async (pro_id) => {
+    const response = await db.any(
+      `select sum(det_cantidad) from ajustes_detalle where pro_id=1;`,
+      [pro_id]
+    );
+    const sum =  response[0]
+    const res = parseInt(sum.sum)
+    console.log("Detalle:"+res)
+    return res;
+  }
+
+  const getCantProducts = async () => {
+    const response = await db.any(
+      `select max(pro_id) from product;;`
+    );
+    const res = response[0].max
+    console.log("Cantidad:"+res)
+    return res;
+  }
 
 
 module.exports = {
