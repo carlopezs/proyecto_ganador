@@ -13,8 +13,7 @@ const getAjustes = async (req, res) => {
 
 const getAjustesWithOutImp = async (req, res) => {
   const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, c.cab_imp
-  from ajustes_cabecera c  
-  where  c.cab_imp=false or c.cab_imp=null
+  from ajustes_cabecera c 
   order by c.cab_id;`)
   res.json(response)
 }
