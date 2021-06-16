@@ -183,13 +183,16 @@ const postCreateAjusteCabecera = async (req, res) => {
         VALUES ($1, $2, current_timestamp, false);`;
     const resp =getNumeroID();
     const valores=(await resp).match().input;
-    console.log(valores);
     try {
         const response = await db.any(sql, [String(valores), cab_descripcion]);
         res.json({
             message: "Cabecera creada con exito",
             body: {
-            cabecera: { cab_descripcion },
+            cabecera: { cab_descripcion,
+            idCabecera: parseInt((await resp).split('-')[1]) 
+            },
+
+            
             },
         });
     } catch (error) {
