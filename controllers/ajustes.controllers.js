@@ -41,7 +41,7 @@ const getKardexByProduct = async (req,res) =>{
     kardexAjustes.push({
       cab_id_ajustes:cab_num, 
       cab_descripcion, 
-      cab_fecha_factura:cab_fecha, 
+      cab_fecha_factura:cab_fecha.toISOString().split("T")[0], 
       det_pro_cantidad:det_cantidad,
       stock
     })
@@ -53,7 +53,7 @@ const getKardexByProduct = async (req,res) =>{
     detComp.map(({det_pro_cantidad})=>{
       kardexCompras.push({
         cab_id_compras:cab_id,
-        cab_fecha_factura,
+        cab_fecha_factura: cab_fecha_factura.toString().split("T")[0],
         det_pro_cantidad,
         stock
       })
@@ -67,7 +67,7 @@ const getKardexByProduct = async (req,res) =>{
     detVent.map(({bd_amount})=>{
       kardexVentas.push({
         cab_id_ventas:bh_id,
-        cab_fecha_factura:bh_date,
+        cab_fecha_factura:bh_date.toString(),
         det_pro_cantidad:(bd_amount*-1),
         stock
       })
@@ -75,7 +75,7 @@ const getKardexByProduct = async (req,res) =>{
     
   })
   const kardex = [...kardexAjustes,...kardexCompras,...kardexVentas]
-  kardex.sort((a, b) => a.cab_fecha_factura > b.cab_fecha_factura)
+  kardex.sort((a, b) => new Date(a.cab_fecha_factura) < new Date(b.cab_fecha_factura) ? -1 :new Date(a.cab_fecha_factura)>new Date(b.cab_fecha_factura) ? 1 :0)
   
 
   const kardexStock = kardex.map((res)=>{
