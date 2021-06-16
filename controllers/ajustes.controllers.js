@@ -13,7 +13,7 @@ const getAjustes = async (req, res) => {
 const getAjustesWithOutImp = async (req, res) => {
   const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, c.cab_imp
   from ajustes_cabecera c  
-  where  c.cab_imp=false or c.cab_imp=null
+  where  c.cab_imp=false or c.cab_imp=true or c.cab_imp=null
   order by c.cab_id;`)
   res.json(response)
 }
@@ -170,13 +170,16 @@ const postCreateAjusteCabecera = async (req, res) => {
         VALUES ($1, $2, current_timestamp, false);`;
     const resp =getNumeroID();
     const valores=(await resp).match().input;
-    console.log(valores);
     try {
         const response = await db.any(sql, [String(valores), cab_descripcion]);
         res.json({
             message: "Cabecera creada con exito",
             body: {
-            cabecera: { cab_descripcion },
+            cabecera: { cab_descripcion,
+            idCabecera: parseInt((await resp).split('-')[1]) 
+            },
+
+            
             },
         });
     } catch (error) {
