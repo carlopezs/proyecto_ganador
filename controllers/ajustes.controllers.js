@@ -8,13 +8,12 @@ const getAjustes = async (req, res) => {
     group by  c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, d.det_cantidad, d.det_stock_registro 
     order by c.cab_id;`)
     res.json(response)
-    await getKardexByProduct()
 }
+
 
 const getAjustesWithOutImp = async (req, res) => {
   const response = await db.any(`SELECT c.cab_id, c.cab_num, c.cab_descripcion, c.cab_fecha, c.cab_imp
-  from ajustes_cabecera c  
-  where  c.cab_imp=false or c.cab_imp=null
+  from ajustes_cabecera c 
   order by c.cab_id;`)
   res.json(response)
 }
@@ -46,10 +45,6 @@ const getKardexByProduct = async (req,res) =>{
     })
   })
 
-
-  /* console.log()
-  console.log("Ajustes***************************")
-  console.log(ajustes) */
   const compras = await getComprasByProduct(pro)
   compras.map(({cab_id, cab_fecha_factura, inv_productos})=>{
     const detComp = inv_productos.filter(({det_pro_codigo})=>det_pro_codigo==pro)
@@ -62,9 +57,6 @@ const getKardexByProduct = async (req,res) =>{
     })
     
   })
-  /* console.log(kardexCompras)
-  console.log("Compras***************************")
-  console.log(compras) */
 
   const ventas = await getVentasByProduct(pro)
   ventas.billPayments.map(({bh_id, bh_date,bills_details})=>{
@@ -79,10 +71,6 @@ const getKardexByProduct = async (req,res) =>{
     
   })
   const kardex = [...kardexAjustes,...kardexCompras,...kardexVentas]
-  console.log(kardex)
-  //console.log(kardexVentas)
-  /* console.log("Ventas***************************")
-  console.log(ventas) */
   res.json(kardex)
 }
 
@@ -131,9 +119,7 @@ const getDetallesByCab = async (req, res) => {
 const getNumeroID = async (req, res) => {
     const response = await db.any(`select max(cab_id) from ajustes_cabecera;`)
     const num = String(response[0].max+1)
-    //console.log(num)
     const num2=parseInt(String(num.length),10)
-    //console.log(num2)
     const numeroIDCompleto ="";
     if(num2<5){
         this.numeroIDCompleto = "AJUS-"+String(num);
@@ -147,16 +133,14 @@ const getNumeroID = async (req, res) => {
     if(num2<2){
         this.numeroIDCompleto = "AJUS-000"+String(num);
     };
-    //console.log(this.numeroIDCompleto)
     return this.numeroIDCompleto
 }
 
 const getNumeroID2 = async (req, res) => {
   const response = await db.any(`select max(cab_id) from ajustes_cabecera;`)
   const num = String(response[0].max+1)
-  //console.log(num)
   const num2=parseInt(String(num.length),10)
-  //console.log(num2)
+
   const numeroIDCompleto ="";
   if(num2<5){
       this.numeroIDCompleto = "AJUS-"+String(num);
@@ -170,7 +154,7 @@ const getNumeroID2 = async (req, res) => {
   if(num2<2){
       this.numeroIDCompleto = "AJUS-000"+String(num);
   };
-  //console.log(this.numeroIDCompleto)
+
   res.json(this.numeroIDCompleto)
 }
 
@@ -202,16 +186,16 @@ const postCreateAjusteCabecera = async (req, res) => {
 
 
 const postCreateAjusteDetalle = async (req, res) => {
-    const { det_cantidad, cab_id, pro_id,det_stock_registro} = req.query;
+    const { det_cantidad, pro_id,det_stock_registro} = req.query;
     const sql = `INSERT INTO public.ajustes_detalle(
       det_cantidad, cab_id, pro_id, det_stock_registro)
-      VALUES ($1, $2, $3, $4);`;
+      VALUES ($1, (select max(cab_id) from ajustes_cabecera), $2, $3);`;
     try {
-      const response = await db.any(sql, [det_cantidad, cab_id, pro_id, det_stock_registro]);
+      const response = await db.any(sql, [det_cantidad, pro_id, det_stock_registro]);
       res.json({
         message: "Detalle creado con exito",
         body: {
-          detalle: { det_cantidad, cab_id, pro_id,det_stock_registro },
+          detalle: { det_cantidad, pro_id,det_stock_registro },
         },
       });
     } catch (error) {
