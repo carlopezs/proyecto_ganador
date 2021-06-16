@@ -34,14 +34,16 @@ const getKardexByProduct = async (req,res) =>{
   let kardexCompras = [];
   let kardexVentas = [];
   let kardexAjustes = [];
+  let stock = 0
+  let sum = 0
   const ajustes = await getAjustesByProd2(pro)
-  ajustes.map(({cab_num, cab_descripcion, cab_fecha, det_cantidad, det_stock_registro})=>{
+  ajustes.map(({cab_num, cab_descripcion, cab_fecha, det_cantidad})=>{
     kardexAjustes.push({
       cab_id_ajustes:cab_num, 
       cab_descripcion, 
       cab_fecha_factura:cab_fecha, 
-      det_pro_cantidad:det_cantidad, 
-      det_stock_registro
+      det_pro_cantidad:det_cantidad,
+      stock
     })
   })
 
@@ -52,7 +54,8 @@ const getKardexByProduct = async (req,res) =>{
       kardexCompras.push({
         cab_id_compras:cab_id,
         cab_fecha_factura,
-        det_pro_cantidad
+        det_pro_cantidad,
+        stock
       })
     })
     
@@ -65,12 +68,21 @@ const getKardexByProduct = async (req,res) =>{
       kardexVentas.push({
         cab_id_ventas:bh_id,
         cab_fecha_factura:bh_date,
-        det_pro_cantidad:(bd_amount*-1)
+        det_pro_cantidad:(bd_amount*-1),
+        stock
       })
     })
     
   })
   const kardex = [...kardexAjustes,...kardexCompras,...kardexVentas]
+  kardex.sort((a, b) => a.cab_fecha_factura > b.cab_fecha_factura)
+  
+
+  const kardexStock = kardex.map((res)=>{
+    sum = sum + res.det_pro_cantidad
+    res.stock = sum
+  })
+  console.log(kardex)
   res.json(kardex)
 }
 
