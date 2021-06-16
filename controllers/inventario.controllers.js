@@ -159,7 +159,11 @@ const getProductsById = async (req, res) => {
         sum = sum + bd_amount
       })
     })
-    sum = sum * -1
+    if(sum===null){
+      sum=0
+   }else{
+      sum = sum * -1
+   }
     console.log("Venta: "+sum)
     return sum;
   };
@@ -177,17 +181,25 @@ const getProductsById = async (req, res) => {
         sum = sum + det_pro_cantidad
       })
     })
+    if(sum===null){
+      sum=0
+   }
     console.log("Compra: "+sum)
     return sum;
   };
 
   const getDetallesByProduct = async (pro_id) => {
     const response = await db.any(
-      `select sum(det_cantidad) from ajustes_detalle where pro_id=1;`,
+      `select sum(det_cantidad) from ajustes_detalle where pro_id=$1;`,
       [pro_id]
     );
+    let res = 0;
     const sum =  response[0]
-    const res = parseInt(sum.sum)
+    if(sum.sum===null){
+       res=0
+    }else{
+      res = parseInt(sum.sum)
+    }
     console.log("Detalle:"+res)
     return res;
   }
