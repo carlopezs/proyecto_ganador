@@ -154,9 +154,11 @@ const getProductsById = async (req, res) => {
     //console.log(data.billPayments)
     let sum = 0
     data.billPayments.map(({bills_details})=>{
-      bills_details.map(({bd_amount})=>{
-        //console.log(bd_amount)
-        sum = sum + bd_amount
+      bills_details.map(({bd_amount,bd_product_id})=>{
+        if (bd_product_id ===pro_id ) {
+          sum = sum + bd_amount
+        }
+        
       })
     })
     if(sum===null){
@@ -176,9 +178,12 @@ const getProductsById = async (req, res) => {
     //console.log(data)
     let sum = 0
     data.map(({inv_productos})=>{
-      inv_productos.map(({det_pro_cantidad})=>{
+      inv_productos.map(({det_pro_cantidad,det_pro_codigo})=>{
         //console.log(det_pro_cantidad)
-        sum = sum + det_pro_cantidad
+        if (det_pro_codigo === pro_id) {
+          sum = sum + det_pro_cantidad
+        }
+     
       })
     })
     if(sum===null){
