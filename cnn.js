@@ -9,12 +9,14 @@ const pgPromise = require("pg-promise");
 } */
 
 const config = {
-  host: 'database2.cjdcw0u0axpy.us-east-2.rds.amazonaws.com',
+  host: 'databasejg.cjdcw0u0axpy.us-east-2.rds.amazonaws.com',
   port: '5432',
-  database: 'supermercado',
+  database: 'ecuador_bdd',
   user: 'postgres',
   password: '12345678'
 }
+
+
 
 /* const config = {
   connectionString:
